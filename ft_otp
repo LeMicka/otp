@@ -1,0 +1,41 @@
+import sys
+import os
+import argparse
+import base64
+import hmac
+import hashlib
+import pyotp
+import time
+from cryptography.fernet import Fernet
+
+hex_chars = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
+
+def check_key(key):
+    if not os.path.isfile(key) or not key.endswith("hex"):
+        sys.exit("give a valid hex file in argument")
+    try:
+        content = open(key, 'r')
+        data = content.read()
+    except:
+        sys.exit(f"{sys.argv[0]} ERROR: hex file not readable")
+    else:
+        for c in key:
+            if c not in hex_chars:
+                sys.exit(f"{sys.argv[0]} ERROR: hex file not readable")
+
+    if len(data) != 64:
+        sys.exit(f"{sys.argv[0]} ERROR: key is not a hexadecimal number")
+
+
+def main():
+    parser = argparse.ArgumentParser(description='the ft_otp program allows you to register an initial password, and is capable of generating a new password each time it is requested')
+    parser.add_argument('-g', type=str, required = False, help = 'Receive an hex key in arguments ant store it in encrypted file', nargs = '?')
+    parser.add_argument('-k', type = str, help = 'Print on stdout a temporary password for the encrypted file passed in argument', nargs = '?')
+    args = parser.parse_args()
+
+    #print(args)
+    if args.g != None:
+        check_key(args.g)
+
+if __name__ == "__main__":
+    main()
